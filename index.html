@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Image Classifier</title>
+    <style>
+        body {
+            padding-top: 100px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin: 240px auto 20px;
+            width: 80%;
+            max-width: 1000px;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            margin-top: 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 40%;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin-top: 10px;
+        }
+
+        button[type="submit"] {
+            display: block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #3f51b5;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #283593;
+        }
+
+        .toggle-btn {
+            display: inline-block;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 8px 16px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .toggle-btn.active {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img id="uploaded-image" alt="Uploaded image" />
+
+        <div>
+            <label>
+                <input type="radio" name="category1" value="true" />
+                Category 1 - True
+            </label>
+            <label>
+                <input type="radio" name="category1" value="false" />
+                Category 1 - False
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="category2" value="true" />
+                Category 2 - True
+            </label>
+            <label>
+                <input type="radio" name="category2" value="false" />
+                Category 2 - False
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="category3" value="true" />
+                Category 3 - True
+            </label>
+            <label>
+                <input type="radio" name="category3" value="false" />
+                Category 3 - False
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="category4a" value="true" />
+                Category 4a - True
+            </label>
+            <label>
+                <input type="radio" name="category4a" value="false" />
+                Category 4a - False
+            </label>
+
+            <div class="form-row">
+                <label for="image-size">Image Size:</label>
+                <input type="range" id="image-size" name="image-size" min="50" max="200" value="100">
+            </div>
+            <div class="form-row">
+                <label>
+                    <input type="submit">
+                </label>
+            </div>
+
+            <label>
+                Upload or paste an image:
+                <input type="file" accept="image/*" onchange="handleImageUpload(event)" />
+            </label>
+
+            </form>
+        </div>
+
+        <script>
+            function handleImageUpload(event) {
+                const file = event.target.files[0];
+            
+                if (!file) {
+                  return;
+                }
+            
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                  const image = document.getElementById("uploaded-image");
+                  image.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+              }
+            
+              const imageSizeInput = document.getElementById('image-size');
+              const uploadedImage = document.getElementById('uploaded-image');
+            
+              imageSizeInput.addEventListener('input', () => {
+                uploadedImage.style.width = `${imageSizeInput.value}%`;
+              });
+            
+              const form = document.querySelector('form');
+            
+              const categories = ['category1', 'category2', 'category3', 'category4a'];
+              categories.forEach(category => {
+                const radios = form.elements[category];
+                for (let i = 0; i < radios.length; i++) {
+                  radios[i].addEventListener('click', () => {
+                    const nextDiv = radios[i].parentNode.parentNode.nextElementSibling;
+                    if (nextDiv) {
+                      nextDiv.style.display = 'block';
+                    }
+                  });
+                }
+              });
+            
+              form.addEventListener('submit', (event) => {
+                event.preventDefault();
+            
+                const formData = new FormData(form);
+                const request = new XMLHttpRequest();
+            
+                request.open('POST', 'https://www.myapi.com/goodenough');
+                request.send(formData);
+            
+                request.onreadystatechange = function () {
+                  if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    console.log(request.responseText);
+                  }
+                }
+              })
+            })
+        </script>
+</body>
+
+</html>
