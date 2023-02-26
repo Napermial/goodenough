@@ -83,126 +83,142 @@
         .toggle-btn.active {
             background-color: #ccc;
         }
+
+        .form-row {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <img id="uploaded-image" alt="Uploaded image" />
+        <form>
 
-        <div>
-            <label>
-                <input type="radio" name="category1" value="true" />
-                Category 1 - True
-            </label>
-            <label>
-                <input type="radio" name="category1" value="false" />
-                Category 1 - False
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" name="category2" value="true" />
-                Category 2 - True
-            </label>
-            <label>
-                <input type="radio" name="category2" value="false" />
-                Category 2 - False
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" name="category3" value="true" />
-                Category 3 - True
-            </label>
-            <label>
-                <input type="radio" name="category3" value="false" />
-                Category 3 - False
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" name="category4a" value="true" />
-                Category 4a - True
-            </label>
-            <label>
-                <input type="radio" name="category4a" value="false" />
-                Category 4a - False
-            </label>
-
-            <div class="form-row">
-                <label for="image-size">Image Size:</label>
-                <input type="range" id="image-size" name="image-size" min="50" max="200" value="100">
-            </div>
-            <div class="form-row">
+            <div class="form-row" id="submit">
                 <label>
-                    <input type="submit">
+                    <input type="submit" value="Mehet">
+
                 </label>
             </div>
+            <div class="form-row">
+                <label for="image-size">Kép átmretezése:</label>
+                <input type="range" id="image-size" name="image-size" min="50" max="200" value="100">
+            </div>
+
 
             <label>
-                Upload or paste an image:
+                Kép feltöltése:
                 <input type="file" accept="image/*" onchange="handleImageUpload(event)" />
             </label>
 
-            </form>
-        </div>
+        </form>
+    </div>
 
-        <script>
-            function handleImageUpload(event) {
-                const file = event.target.files[0];
-            
-                if (!file) {
-                  return;
+    <script>
+        let fileName = 'test';
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            fileName = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const image = document.getElementById("uploaded-image");
+                image.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const imageSizeInput = document.getElementById('image-size');
+        const uploadedImage = document.getElementById('uploaded-image');
+
+        imageSizeInput.addEventListener('input', () => {
+            uploadedImage.style.width = `${imageSizeInput.value}%`;
+        });
+
+
+
+        const categories = ['1', '2', '3', '4a', '4b', '4c', '5a', '5b', '6a', '6b', '7a', '7b', '7c', '7d', '7e', '8a', '8b', '9a', '9b', '9c', '9d', '9e', '10a', '10b', '10c', '10d', '10e', '11a', '11b', '12a', '12b', '12c', '12d', '12e', '13', '14a', '14b', '14c', '14d', '14e', '14f', '15a', '15b', '16a', '16b', '16c', '16d', '17a', '17b', '18a', '18b'];
+
+        const form = document.querySelector('form');
+        const submitButton = form.querySelector('#submit');
+
+
+        for (const [index, category] of categories.entries()) {
+            const categoryContainer = document.createElement('div');
+            const trueInput = document.createElement('input');
+            const falseInput = document.createElement('input');
+            const labelTrue = document.createElement('label');
+            const labelFalse = document.createElement('label');
+
+            trueInput.type = 'radio';
+            trueInput.name = `category${category}`;
+            trueInput.value = true;
+            trueInput.addEventListener('click', () => {
+                const nextDiv = trueInput.parentNode.parentNode.nextElementSibling;
+
+                if (nextDiv) {
+                    trueInput.parentNode.parentNode.style.display = 'none';
+                    nextDiv.style.display = 'block';
                 }
-            
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                  const image = document.getElementById("uploaded-image");
-                  image.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-              }
-            
-              const imageSizeInput = document.getElementById('image-size');
-              const uploadedImage = document.getElementById('uploaded-image');
-            
-              imageSizeInput.addEventListener('input', () => {
-                uploadedImage.style.width = `${imageSizeInput.value}%`;
-              });
-            
-              const form = document.querySelector('form');
-            
-              const categories = ['category1', 'category2', 'category3', 'category4a'];
-              categories.forEach(category => {
-                const radios = form.elements[category];
-                for (let i = 0; i < radios.length; i++) {
-                  radios[i].addEventListener('click', () => {
-                    const nextDiv = radios[i].parentNode.parentNode.nextElementSibling;
-                    if (nextDiv) {
-                      nextDiv.style.display = 'block';
-                    }
-                  });
+            });
+
+            falseInput.type = 'radio';
+            falseInput.name = `category${category}`;
+            falseInput.value = false;
+            falseInput.addEventListener('click', () => {
+                const nextDiv = falseInput.parentNode.parentNode.nextElementSibling;
+
+                if (nextDiv) {
+                    falseInput.parentNode.parentNode.style.display = 'none';
+                    nextDiv.style.display = 'block';
                 }
-              });
-            
-              form.addEventListener('submit', (event) => {
-                event.preventDefault();
-            
-                const formData = new FormData(form);
-                const request = new XMLHttpRequest();
-            
-                request.open('POST', 'https://www.myapi.com/goodenough');
-                request.send(formData);
-            
-                request.onreadystatechange = function () {
-                  if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    console.log(request.responseText);
-                  }
-                }
-              })
+            });
+
+            labelTrue.textContent = `${category} - Van`;
+            labelTrue.appendChild(trueInput);
+
+            labelFalse.textContent = `${category} - Nincs`;
+            labelFalse.appendChild(falseInput);
+
+            categoryContainer.appendChild(labelTrue);
+            categoryContainer.appendChild(labelFalse);
+
+            if (index === 0) {
+                categoryContainer.style.display = 'block';
+            } else {
+                categoryContainer.style.display = 'none';
+            }
+
+            form.insertBefore(categoryContainer, submitButton);
+        }
+
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            formData.append('image_name', fileName);
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
+
+            fetch('http://localhost:8000/grade', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: json
             })
-        </script>
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+        });
+
+    </script>
 </body>
 
 </html>
